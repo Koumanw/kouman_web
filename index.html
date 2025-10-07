@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu de Devinette - Partage</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.2rem;
+        }
+        
+        .description {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .game-area {
+            margin: 25px 0;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        input {
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            border-color: #6a11cb;
+            outline: none;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .secondary-btn {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            margin-top: 10px;
+        }
+        
+        .message {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hint {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .attempts {
+            margin-top: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .debug {
+            background-color: #f8f9fa;
+            border: 1px dashed #dee2e6;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        
+        .share-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .share-link {
+            display: flex;
+            margin: 15px 0;
+        }
+        
+        .share-link input {
+            flex-grow: 1;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border-right: none;
+        }
+        
+        .share-link button {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            padding: 12px 15px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .notification.show {
+            opacity: 1;
+        }
+        
+        .share-instructions {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .clickable-link {
+            display: block;
+            margin-top: 10px;
+            color: #2575fc;
+            text-decoration: none;
+            word-break: break-all;
+            padding: 10px;
+            border: 1px dashed #2575fc;
+            border-radius: 5px;
+        }
+        
+        .clickable-link:hover {
+            text-decoration: underline;
+            background-color: #f0f8ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Jeu de Devinette</h1>
+        <p class="description">Je pense à un nombre entre 1 et 100. Essayez de le deviner !</p>
+        
+        <div class="game-area">
+            <div class="input-group">
+                <input type="number" id="guessInput" min="1" max="100" placeholder="Entrez un nombre entre 1 et 100">
+                <button id="guessButton">Deviner</button>
+            </div>
+            
+            <div id="message" class="message"></div>
+            
+            <div class="attempts">
+                Tentatives: <span id="attemptCount">0</span>
+            </div>
+            
+            <div id="debugInfo" class="debug">
+                <!-- Le nombre secret sera affiché ici -->
+            </div>
+            
+            <div class="share-section">
+                <button id="shareButton" class="secondary-btn">Partager ce jeu</button>
+                <div id="shareLinkContainer" class="hidden">
+                    <p>Partagez ce lien pour que d'autres puissent jouer avec le même nombre secret :</p>
+                    <div class="share-link">
+                        <input type="text" id="shareLink" readonly>
+                        <button id="copyButton">Copier</button>
+                    </div>
+                    <div class="share-instructions">
+                        <p>Vous pouvez copier le lien ci-dessus ou cliquer sur le lien ci-dessous pour tester :</p>
+                        <a id="clickableLink" href="#" target="_blank" class="clickable-link">Lien de partage</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="notification" class="notification">Lien copié dans le presse-papiers !</div>
+
+    <script>
+        // Génération du nombre aléatoire
+        let secretNumber;
+        
+        // Vérifier si un nombre secret est déjà dans l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sharedNumber = urlParams.get('secret');
+        
+        if (sharedNumber) {
+            secretNumber = parseInt(sharedNumber);
+            document.getElementById('debugInfo').textContent = `DEBUG: Vous jouez avec un nombre partagé - Le nombre secret est ${secretNumber}`;
+        } else {
+            secretNumber = Math.floor(Math.random() * 100) + 1;
+            document.getElementById('debugInfo').textContent = `DEBUG: Le nombre secret est ${secretNumber}`;
+        }
+        
+        let attempts = 0;
+        
+        // Éléments DOM
+        const guessInput = document.getElementById('guessInput');
+        const guessButton = document.getElementById('guessButton');
+        const messageDiv = document.getElementById('message');
+        const attemptCount = document.getElementById('attemptCount');
+        const shareButton = document.getElementById('shareButton');
+        const shareLinkContainer = document.getElementById('shareLinkContainer');
+        const shareLink = document.getElementById('shareLink');
+        const copyButton = document.getElementById('copyButton');
+        const clickableLink = document.getElementById('clickableLink');
+        const notification = document.getElementById('notification');
+        
+        // Fonction pour vérifier la proposition
+        function checkGuess() {
+            const userGuess = parseInt(guessInput.value);
+            
+            // Validation de l'entrée
+            if (isNaN(userGuess) || userGuess < 1 || userGuess > 100) {
+                messageDiv.textContent = "Veuillez entrer un nombre valide entre 1 et 100.";
+                messageDiv.className = "message hint";
+                return;
+            }
+            
+            // Incrémenter le compteur de tentatives
+            attempts++;
+            attemptCount.textContent = attempts;
+            
+            // Vérifier si la proposition est correcte
+            if (userGuess === secretNumber) {
+                messageDiv.textContent = "🎉 Félicitations ! Vous avez trouvé le bon nombre !";
+                messageDiv.className = "message success";
+                guessButton.disabled = true;
+                guessInput.disabled = true;
+            } else if (userGuess > secretNumber) {
+                messageDiv.textContent = "Désolé, votre nombre est trop haut. Essayez encore !";
+                messageDiv.className = "message hint";
+            } else {
+                messageDiv.textContent = "Désolé, votre nombre est trop bas. Essayez encore !";
+                messageDiv.className = "message hint";
+            }
+            
+            // Vider le champ de saisie
+            guessInput.value = "";
+            guessInput.focus();
+        }
+        
+        // Fonction pour générer le lien de partage
+        function generateShareLink() {
+            // Créer un lien absolu avec le nombre secret
+            const baseUrl = window.location.origin + window.location.pathname;
+            const shareUrl = `${baseUrl}?secret=${secretNumber}`;
+            
+            shareLink.value = shareUrl;
+            clickableLink.href = shareUrl;
+            clickableLink.textContent = shareUrl;
+            
+            shareLinkContainer.classList.remove('hidden');
+        }
+        
+        // Fonction pour copier le lien dans le presse-papiers
+        function copyToClipboard() {
+            shareLink.select();
+            shareLink.setSelectionRange(0, 99999); // Pour mobile
+            document.execCommand('copy');
+            
+            // Afficher la notification
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Événements
+        guessButton.addEventListener('click', checkGuess);
+        
+        guessInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                checkGuess();
+            }
+        });
+        
+        shareButton.addEventListener('click', generateShareLink);
+        
+        copyButton.addEventListener('click', copyToClipboard);
+        
+        // Focus sur le champ de saisie au chargement
+        guessInput.focus();
+    </script>
+</body>
+</html>
