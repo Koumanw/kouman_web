@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeu de Devinette - Système de Paiement Wave</title>
+    <title>Jeu de Devinette - Système Complet</title>
     <style>
         * {
             margin: 0;
@@ -94,6 +94,13 @@
         
         button:active {
             transform: translateY(-1px);
+        }
+        
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         
         .secondary-btn {
@@ -269,6 +276,17 @@
             color: #155724;
         }
         
+        .user-id {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
         @media (max-width: 600px) {
             .container {
                 padding: 25px 20px;
@@ -286,11 +304,22 @@
             .wave-number {
                 font-size: 1.3rem;
             }
+            
+            .user-id {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 15px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="user-id">
+            ID: <span id="userId">Chargement...</span>
+        </div>
+        
         <h1>🎯 Jeu de Devinette</h1>
         <p class="subtitle">Devinez le nombre secret entre 1 et 100</p>
         <p class="description">Je pense à un nombre entre 1 et 100. À vous de le deviner! Après 5 tentatives échouées, un paiement de 100 FCFA sera requis.</p>
@@ -305,12 +334,12 @@
             
             <div class="attempts">
                 Tentatives: <span id="attemptCount">0</span> | 
-                Échecs: <span id="failureCount">0</span>/5
+                Restantes: <span id="remainingAttempts">5</span>
             </div>
             
             <div id="paymentSection" class="payment-section hidden">
                 <h3>⛔ Paiement Requis</h3>
-                <p>Vous avez échoué 5 fois. Veuillez effectuer un paiement de 100 FCFA via Wave pour continuer.</p>
+                <p>Vous avez épuisé vos 5 tentatives. Veuillez effectuer un paiement de 100 FCFA via Wave pour continuer.</p>
                 
                 <div class="wave-number">0576540456</div>
                 
@@ -321,7 +350,7 @@
                         <li>Accédez à l'option "Envoyer de l'argent"</li>
                         <li>Entrez le numéro: <strong>0576540456</strong></li>
                         <li>Montant: <strong>100 FCFA</strong></li>
-                        <li>Ajoutez la référence: <strong>DEVINETTE</strong> dans les notes</li>
+                        <li>Ajoutez la référence: <strong id="paymentReference">DEV-XXXX</strong> dans les notes</li>
                         <li>Confirmez le paiement</li>
                     </ol>
                     <p><strong>Après paiement, cliquez sur "Vérifier le Paiement" pour continuer</strong></p>
@@ -335,13 +364,13 @@
                     <button id="verifyPayment">Vérifier le Paiement</button>
                 </div>
                 
-                <p><small>Une fois le paiement validé, vous pourrez continuer le jeu.</small></p>
+                <p><small>Une fois le paiement validé, vous recevrez 5 nouvelles tentatives.</small></p>
             </div>
             
             <div class="share-section">
                 <button id="shareButton" class="secondary-btn">📤 Partager ce jeu</button>
                 <div id="shareLinkContainer" class="hidden">
-                    <p>Partagez ce lien pour défier vos amis avec le même nombre secret :</p>
+                    <p>Partagez ce lien pour défier vos amis :</p>
                     <div class="share-link">
                         <input type="text" id="shareLink" readonly>
                         <button id="copyButton">Copier</button>
@@ -354,33 +383,146 @@
     <div id="notification" class="notification">Lien copié dans le presse-papiers !</div>
 
     <script>
-        // Génération du nombre aléatoire
-        let secretNumber;
+        // Backend simulé
+        class GameBackend {
+            constructor() {
+                this.users = new Map();
+                this.transactions = new Map();
+                this.secretNumbers = new Map();
+                this.userSessions = new Map();
+            }
+            
+            // Générer un ID utilisateur unique
+            generateUserId() {
+                return 'USER_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+            }
+            
+            // Générer une référence de paiement unique
+            generatePaymentReference() {
+                return 'DEV-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            }
+            
+            // Initialiser ou récupérer une session utilisateur
+            initializeUser(userId) {
+                if (!this.userSessions.has(userId)) {
+                    this.userSessions.set(userId, {
+                        userId: userId,
+                        attempts: 0,
+                        maxAttempts: 5,
+                        paid: false,
+                        secretNumber: Math.floor(Math.random() * 100) + 1,
+                        paymentReference: this.generatePaymentReference(),
+                        paymentVerified: false
+                    });
+                }
+                return this.userSessions.get(userId);
+            }
+            
+            // Vérifier une tentative
+            checkGuess(userId, guess) {
+                const user = this.userSessions.get(userId);
+                if (!user) return { error: "Utilisateur non trouvé" };
+                
+                // Vérifier si l'utilisateur a encore des tentatives
+                if (user.attempts >= user.maxAttempts && !user.paid) {
+                    return { error: "Tentatives épuisées. Paiement requis." };
+                }
+                
+                user.attempts++;
+                
+                if (guess === user.secretNumber) {
+                    return { 
+                        success: true, 
+                        message: "Félicitations! Vous avez trouvé le nombre secret!", 
+                        attempts: user.attempts,
+                        remaining: user.maxAttempts - user.attempts
+                    };
+                } else if (guess > user.secretNumber) {
+                    return { 
+                        success: false, 
+                        message: "Trop haut! Essayez un nombre plus bas.", 
+                        attempts: user.attempts,
+                        remaining: user.maxAttempts - user.attempts,
+                        hint: "Trop haut"
+                    };
+                } else {
+                    return { 
+                        success: false, 
+                        message: "Trop bas! Essayez un nombre plus élevé.", 
+                        attempts: user.attempts,
+                        remaining: user.maxAttempts - user.attempts,
+                        hint: "Trop bas"
+                    };
+                }
+            }
+            
+            // Vérifier le statut de paiement
+            verifyPayment(userId) {
+                const user = this.userSessions.get(userId);
+                if (!user) return { error: "Utilisateur non trouvé" };
+                
+                // Simuler la vérification du paiement (dans un vrai système, on vérifierait avec l'API Wave)
+                // Pour cette démo, on simule un délai et un taux de réussite de 70%
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        const paymentVerified = Math.random() > 0.3;
+                        
+                        if (paymentVerified) {
+                            user.paid = true;
+                            user.attempts = 0; // Réinitialiser les tentatives
+                            user.paymentReference = this.generatePaymentReference(); // Nouvelle référence pour le prochain paiement
+                            resolve({ 
+                                success: true, 
+                                message: "Paiement vérifié! Vous avez 5 nouvelles tentatives." 
+                            });
+                        } else {
+                            resolve({ 
+                                success: false, 
+                                message: "Paiement non trouvé. Veuillez réessayer dans quelques minutes." 
+                            });
+                        }
+                    }, 2000);
+                });
+            }
+            
+            // Obtenir le statut de l'utilisateur
+            getUserStatus(userId) {
+                const user = this.userSessions.get(userId);
+                if (!user) return { error: "Utilisateur non trouvé" };
+                
+                return {
+                    userId: user.userId,
+                    attempts: user.attempts,
+                    maxAttempts: user.maxAttempts,
+                    remaining: user.maxAttempts - user.attempts,
+                    paid: user.paid,
+                    paymentReference: user.paymentReference
+                };
+            }
+        }
+
+        // Initialisation du backend
+        const backend = new GameBackend();
         
-        // Vérifier si un nombre secret est déjà dans l'URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const sharedNumber = urlParams.get('secret');
-        
-        if (sharedNumber) {
-            secretNumber = parseInt(sharedNumber);
-        } else {
-            secretNumber = Math.floor(Math.random() * 100) + 1;
+        // Gestion de l'utilisateur
+        let userId = localStorage.getItem('gameUserId');
+        if (!userId) {
+            userId = backend.generateUserId();
+            localStorage.setItem('gameUserId', userId);
         }
         
-        let attempts = 0;
-        let failures = 0;
-        let paymentRequired = false;
-        let paymentVerified = false;
+        // Initialiser la session utilisateur
+        backend.initializeUser(userId);
         
-        // Simuler une base de données de transactions (en production, ce serait côté serveur)
-        const transactionDatabase = [];
+        // Mettre à jour l'affichage de l'ID utilisateur
+        document.getElementById('userId').textContent = userId;
         
         // Éléments DOM
         const guessInput = document.getElementById('guessInput');
         const guessButton = document.getElementById('guessButton');
         const messageDiv = document.getElementById('message');
         const attemptCount = document.getElementById('attemptCount');
-        const failureCount = document.getElementById('failureCount');
+        const remainingAttempts = document.getElementById('remainingAttempts');
         const paymentSection = document.getElementById('paymentSection');
         const paymentStatus = document.getElementById('paymentStatus');
         const verifyPayment = document.getElementById('verifyPayment');
@@ -389,15 +531,34 @@
         const shareLink = document.getElementById('shareLink');
         const copyButton = document.getElementById('copyButton');
         const notification = document.getElementById('notification');
+        const paymentReference = document.getElementById('paymentReference');
+        
+        // Mettre à jour l'affichage du statut
+        function updateUserStatus() {
+            const status = backend.getUserStatus(userId);
+            if (!status.error) {
+                attemptCount.textContent = status.attempts;
+                remainingAttempts.textContent = status.remaining;
+                paymentReference.textContent = status.paymentReference;
+                
+                // Afficher/masquer la section de paiement
+                if (status.attempts >= status.maxAttempts && !status.paid) {
+                    paymentSection.classList.remove('hidden');
+                    guessButton.disabled = true;
+                    messageDiv.textContent = "❌ Vous avez épuisé vos 5 tentatives. Paiement requis pour continuer.";
+                    messageDiv.className = "message warning";
+                } else {
+                    paymentSection.classList.add('hidden');
+                    guessButton.disabled = false;
+                }
+            }
+        }
+        
+        // Initialiser l'affichage
+        updateUserStatus();
         
         // Fonction pour vérifier la proposition
         function checkGuess() {
-            if (paymentRequired && !paymentVerified) {
-                messageDiv.textContent = "Veuillez d'abord valider votre paiement pour continuer.";
-                messageDiv.className = "message warning";
-                return;
-            }
-            
             const userGuess = parseInt(guessInput.value);
             
             // Validation de l'entrée
@@ -407,91 +568,66 @@
                 return;
             }
             
-            // Incrémenter le compteur de tentatives
-            attempts++;
-            attemptCount.textContent = attempts;
+            // Appel au backend
+            const result = backend.checkGuess(userId, userGuess);
             
-            // Vérifier si la proposition est correcte
-            if (userGuess === secretNumber) {
-                messageDiv.textContent = "🎉 Félicitations ! Vous avez trouvé le bon nombre !";
+            if (result.error) {
+                messageDiv.textContent = result.error;
+                messageDiv.className = "message warning";
+            } else if (result.success) {
+                messageDiv.textContent = "🎉 " + result.message;
                 messageDiv.className = "message success";
                 guessButton.disabled = true;
                 guessInput.disabled = true;
             } else {
-                // Incrémenter le compteur d'échecs
-                failures++;
-                failureCount.textContent = failures;
-                
-                if (userGuess > secretNumber) {
-                    messageDiv.textContent = "📉 Votre nombre est trop haut. Essayez encore !";
-                    messageDiv.className = "message hint";
-                } else {
-                    messageDiv.textContent = "📈 Votre nombre est trop bas. Essayez encore !";
-                    messageDiv.className = "message hint";
-                }
-                
-                // Vérifier si le paiement est nécessaire
-                if (failures >= 5 && !paymentVerified) {
-                    paymentRequired = true;
-                    paymentSection.classList.remove('hidden');
-                    messageDiv.textContent = "❌ Vous avez échoué 5 fois. Paiement requis pour continuer.";
-                    messageDiv.className = "message warning";
-                    guessButton.disabled = true;
-                }
+                messageDiv.textContent = result.message;
+                messageDiv.className = "message hint";
             }
+            
+            // Mettre à jour l'affichage
+            updateUserStatus();
             
             // Vider le champ de saisie
             guessInput.value = "";
-            if (!paymentRequired || paymentVerified) {
-                guessInput.focus();
-            }
+            guessInput.focus();
         }
         
-        // Fonction pour vérifier le paiement (simulation d'API)
+        // Fonction pour vérifier le paiement
         function verifyPaymentStatus() {
             // Afficher le statut de vérification
             paymentStatus.classList.remove('hidden');
             paymentStatus.textContent = "Statut: Vérification en cours...";
             paymentStatus.className = "payment-status pending";
             
-            // Simuler un appel API avec délai
-            setTimeout(() => {
-                // Dans un système réel, vous vérifieriez avec l'API Wave
-                // Pour cette démo, nous allons simuler une vérification avec 70% de succès
-                const isPaymentVerified = Math.random() > 0.3;
-                
-                if (isPaymentVerified) {
-                    paymentVerified = true;
-                    paymentRequired = false;
+            // Appel au backend
+            backend.verifyPayment(userId).then(result => {
+                if (result.success) {
                     paymentStatus.textContent = "Statut: Paiement vérifié avec succès!";
                     paymentStatus.className = "payment-status verified";
                     
-                    // Réactiver le jeu
-                    guessButton.disabled = false;
-                    messageDiv.textContent = "✅ Paiement validé ! Vous pouvez continuer à jouer.";
+                    messageDiv.textContent = "✅ " + result.message;
                     messageDiv.className = "message success";
                     
-                    // Réinitialiser le compteur d'échecs
-                    failures = 0;
-                    failureCount.textContent = failures;
+                    // Mettre à jour l'affichage
+                    updateUserStatus();
                     
                     // Cacher la section de paiement après un délai
                     setTimeout(() => {
                         paymentSection.classList.add('hidden');
                         guessInput.focus();
-                    }, 2000);
+                    }, 3000);
                 } else {
-                    paymentStatus.textContent = "Statut: Paiement non trouvé. Veuillez réessayer dans quelques minutes.";
+                    paymentStatus.textContent = "Statut: " + result.message;
                     paymentStatus.className = "payment-status pending";
                 }
-            }, 2000);
+            });
         }
         
         // Fonction pour générer le lien de partage
         function generateShareLink() {
-            // Créer un lien absolu avec le nombre secret
+            // Créer un lien absolu
             const baseUrl = window.location.origin + window.location.pathname;
-            const shareUrl = `${baseUrl}?secret=${secretNumber}`;
+            const shareUrl = baseUrl;
             
             shareLink.value = shareUrl;
             shareLinkContainer.classList.remove('hidden');
