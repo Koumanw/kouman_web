@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Culture Africaine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #e74c3c;
+            --secondary: #2ecc71;
+            --accent: #f39c12;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --ivory: #FFD700;
+            --ivory-dark: #B8860B;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            position: relative;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .user-info {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            color: white;
+        }
+        
+        .app-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            background: var(--dark);
+            flex-wrap: wrap;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            min-width: 120px;
+            padding: 15px;
+            text-align: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .nav-tab.active {
+            background: var(--primary);
+        }
+        
+        .nav-tab:hover:not(.active) {
+            background: #34495e;
+        }
+        
+        /* Contenu des onglets */
+        .tab-content {
+            padding: 30px;
+            min-height: 500px;
+        }
+        
+        .tab-pane {
+            display: none;
+        }
+        
+        .tab-pane.active {
+            display: block;
+        }
+        
+        /* Formulaire de connexion */
+        .auth-form {
+            max-width: 400px;
+            margin: 0 auto;
+            background: var(--light);
+            padding: 30px;
+            border-radius: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
+        }
+        
+        .auth-switch {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .auth-switch a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .auth-switch a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Écran d'accueil */
+        .welcome-screen {
+            text-align: center;
+        }
+        
+        .welcome-screen h2 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        
+        .welcome-screen p {
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            background: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+            margin: 10px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        
+        /* Catégories */
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .category {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .category:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: var(--accent);
+        }
+        
+        .category.locked {
+            opacity: 0.6;
+            position: relative;
+        }
+        
+        .category.locked::after {
+            content: "🔒";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .category-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .category-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .category-desc {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        
+        /* Écran de quiz */
+        .quiz-screen {
+            text-align: center;
+        }
+        
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .quiz-progress {
+            width: 100%;
+            height: 10px;
+            background: #ecf0f1;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .quiz-progress-bar {
+            height: 100%;
+            background: var(--secondary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .question {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        @media (min-width: 480px) {
+            .options {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .option {
+            padding: 15px;
+            background: var(--light);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        
+        .option:hover {
+            background: #d5dbdb;
+        }
+        
+        .option.selected {
+            border-color: var(--accent);
+            background: #fef9e7;
+        }
+        
+        .option.correct {
+            border-color: var(--secondary);
+            background: #eafaf1;
+        }
+        
+        .option.incorrect {
+            border-color: var(--primary);
+            background: #fdedec;
+        }
+        
+        .quiz-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        /* Boutons */
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+        
+        .btn-accent {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-accent:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+        }
+        
+        .btn-ivory {
+            background: var(--ivory);
+            color: #333;
+        }
+        
+        .btn-ivory:hover {
+            background: var(--ivory-dark);
+            transform: translateY(-2px);
+        }
+        
+        /* Écran de résultats */
+        .results-screen {
+            text-align: center;
+        }
+        
+        .results-score {
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+        
+        .results-message {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+        
+        .results-details {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #bdc3c7;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* Section premium */
+        .premium-section {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 30px;
+            color: white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .premium-section h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        
+        .premium-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .premium-feature {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .premium-price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .wave-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: white;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 15px 0;
+        }
+        
+        /* Profil utilisateur */
+        .profile-section {
+            text-align: center;
+        }
+        
+        .profile-card {
+            background: var(--light);
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .profile-avatar {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+        
+        .profile-name {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .profile-email {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        
+        .profile-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--secondary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .tab-content {
+                padding: 20px;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .user-info {
+                position: relative;
+                margin-bottom: 15px;
+            }
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌍 Quiz Culture Africaine</h1>
+            <p>Testez vos connaissances sur le riche patrimoine africain</p>
+            <div class="user-info" id="user-info">
+                <span id="user-greeting">Invité</span>
+                <button class="btn btn-primary" id="login-btn" style="margin-left: 10px; padding: 5px 10px;">Connexion</button>
+            </div>
+        </header>
+        
+        <div class="app-container">
+            <div class="nav-tabs">
+                <div class="nav-tab active" data-tab="home">Accueil</div>
+                <div class="nav-tab" data-tab="quiz">Quiz</div>
+                <div class="nav-tab" data-tab="leaderboard">Classement</div>
+                <div class="nav-tab" data-tab="premium">Premium</div>
+                <div class="nav-tab" data-tab="profile">Profil</div>
+            </div>
+            
+            <div class="tab-content">
+                <!-- Accueil -->
+                <div class="tab-pane active" id="home">
+                    <div class="welcome-screen">
+                        <h2>Bienvenue au Quiz Culture Africaine!</h2>
+                        <p>Découvrez la richesse et la diversité des cultures africaines à travers des questions captivantes.</p>
+                        
+                        <div class="stats">
+                            <div class="stat-item">
+                                <div class="stat-value" id="user-score">0</div>
+                                <div class="stat-label">Score Total</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="quizzes-taken">0</div>
+                                <div class="stat-label">Quiz Complétés</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="correct-answers">0%</div>
+                                <div class="stat-label">Bonnes Réponses</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="user-rank">-</div>
+                                <div class="stat-label">Classement</div>
+                            </div>
+                        </div>
+                        
+                        <h3>Choisissez une catégorie</h3>
+                        <div class="categories">
+                            <div class="category" data-category="history">
+                                <div class="category-icon">🏛️</div>
+                                <div class="category-name">Histoire</div>
+                                <div class="category-desc">Empires et royaumes africains</div>
+                            </div>
+                            <div class="category" data-category="geography">
+                                <div class="category-icon">🗺️</div>
+                                <div class="category-name">Géographie</div>
+                                <div class="category-desc">Pays, capitales et paysages</div>
+                            </div>
+                            <div class="category" data-category="culture">
+                                <div class="category-icon">🎭</div>
+                                <div class="category-name">Arts & Culture</div>
+                                <div class="category-desc">Musique, danse, littérature</div>
+                            </div>
+                            <div class="category" data-category="cotedivoire">
+                                <div class="category-icon">🇨🇮</div>
+                                <div class="category-name">Côte d'Ivoire</div>
+                                <div class="category-desc">Culture ivoirienne</div>
+                            </div>
+                            <div class="category locked" data-category="languages">
+                                <div class="category-icon">💬</div>
+                                <div class="category-name">Langues</div>
+                                <div class="category-desc">Diversité linguistique</div>
+                            </div>
+                            <div class="category locked" data-category="cuisine">
+                                <div class="category-icon">🍲</div>
+                                <div class="category-name">Cuisine</div>
+                                <div class="category-desc">Plats traditionnels</div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary" id="start-quiz" style="margin-top: 30px;">Commencer un Quiz Gratuit</button>
+                    </div>
+                </div>
+                
+                <!-- Quiz -->
+                <div class="tab-pane" id="quiz">
+                    <div class="quiz-screen">
+                        <div class="quiz-header">
+                            <div>Question <span id="current-question">1</span>/<span id="total-questions">5</span></div>
+                            <div>Score: <span id="quiz-score">0</span></div>
+                        </div>
+                        
+                        <div class="quiz-progress">
+                            <div class="quiz-progress-bar" id="quiz-progress-bar"></div>
+                        </div>
+                        
+                        <div class="question" id="question-text">
+                            Chargement de la question...
+                        </div>
+                        
+                        <div class="options" id="options-container">
+                            <!-- Les options seront ajoutées dynamiquement -->
+                        </div>
+                        
+                        <div class="quiz-actions">
+                            <button class="btn btn-primary" id="prev-question" disabled>Précédent</button>
+                            <button class="btn btn-secondary" id="next-question">Suivant</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Classement -->
+                <div class="tab-pane" id="leaderboard">
+                    <h2>Classement des Meilleurs Scores</h2>
+                    <p>Comparez vos performances avec d'autres joueurs</p>
+                    
+                    <div class="results-details" id="leaderboard-list">
+                        <!-- Le classement sera chargé dynamiquement -->
+                    </div>
+                    
+                    <button class="btn btn-accent" id="share-score">Partager mon Score</button>
+                </div>
+                
+                <!-- Premium -->
+                <div class="tab-pane" id="premium">
+                    <h2>Passez à la Version Premium</h2>
+                    <p>Débloquez tout le contenu et améliorez votre expérience</p>
+                    
+                    <div class="premium-section">
+                        <h3>Quiz Culture Africaine Premium</h3>
+                        <p>Accédez à tous les contenus exclusifs</p>
+                        
+                        <div class="premium-features">
+                            <div class="premium-feature">
+                                <h4>📚 Quiz Illimités</h4>
+                                <p>Plus de 1000 questions</p>
+                            </div>
+                            <div class="premium-feature">
+                                <h4>🌍 Toutes Catégories</h4>
+                                <p>Débloquez les 6 catégories</p>
+                            </div>
+                            <div class="premium-feature">
+                                <h4>🏆 Mode Compétition</h4>
+                                <p>Affrontez d'autres joueurs</p>
+                            </div>
+                            <div class="premium-feature">
+                                <h4>📊 Statistiques Détaillées</h4>
+                                <p>Suivez votre progression</p>
+                            </div>
+                        </div>
+                        
+                        <div class="premium-price">1.000 FCFA</div>
+                        
+                        <p>Paiement sécurisé via Wave</p>
+                        <div class="wave-number">0576540456</div>
+                        
+                        <p>Envoyez 1.000 FCFA avec la référence: <strong>QUIZ-AFRIQUE</strong></p>
+                        
+                        <button class="btn btn-accent" id="verify-payment">J'ai Payé, Débloquer Premium</button>
+                    </div>
+                </div>
+                
+                <!-- Profil -->
+                <div class="tab-pane" id="profile">
+                    <div class="profile-section">
+                        <h2>Mon Profil</h2>
+                        <p>Gérez votre compte et consultez vos statistiques</p>
+                        
+                        <div id="profile-content">
+                            <!-- Le contenu du profil sera chargé dynamiquement -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Connexion/Inscription -->
+                <div class="tab-pane" id="auth">
+                    <div class="welcome-screen">
+                        <h2 id="auth-title">Connexion</h2>
+                        <p id="auth-subtitle">Accédez à votre compte pour sauvegarder vos progrès</p>
+                        
+                        <div class="auth-form">
+                            <div id="login-form">
+                                <div class="form-group">
+                                    <label for="login-email">Email</label>
+                                    <input type="email" id="login-email" placeholder="votre@email.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="login-password">Mot de passe</label>
+                                    <input type="password" id="login-password" placeholder="Votre mot de passe">
+                                </div>
+                                <button class="btn btn-primary" id="login-submit" style="width: 100%;">Se connecter</button>
+                                <div class="auth-switch">
+                                    <p>Pas encore de compte? <a id="switch-to-register">S'inscrire</a></p>
+                                </div>
+                            </div>
+                            
+                            <div id="register-form" class="hidden">
+                                <div class="form-group">
+                                    <label for="register-name">Nom complet</label>
+                                    <input type="text" id="register-name" placeholder="Votre nom complet">
+                                </div>
+                                <div class="form-group">
+                                    <label for="register-email">Email</label>
+                                    <input type="email" id="register-email" placeholder="votre@email.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="register-password">Mot de passe</label>
+                                    <input type="password" id="register-password" placeholder="Créez un mot de passe">
+                                </div>
+                                <div class="form-group">
+                                    <label for="register-confirm">Confirmer le mot de passe</label>
+                                    <input type="password" id="register-confirm" placeholder="Confirmez votre mot de passe">
+                                </div>
+                                <button class="btn btn-secondary" id="register-submit" style="width: 100%;">Créer un compte</button>
+                                <div class="auth-switch">
+                                    <p>Déjà un compte? <a id="switch-to-login">Se connecter</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        Message de notification
+    </div>
+
+    <script>
+        // Données du quiz avec questions sur la Côte d'Ivoire
+        const quizData = {
+            history: [
+                {
+                    question: "Quel empire ouest-africain était réputé pour sa richesse en or ?",
+                    options: ["Empire du Ghana", "Empire Songhaï", "Royaume du Kongo", "Empire du Mali"],
+                    correct: 3,
+                    explanation: "L'Empire du Mali, sous Mansa Moussa, était célèbre pour son immense richesse en or."
+                },
+                {
+                    question: "Qui était la reine guerrière du royaume du Dahomey ?",
+                    options: ["Reine Nzinga", "Reine Ranavalona", "Reine Amina", "Reine Hangbe"],
+                    correct: 3,
+                    explanation: "La reine Hangbe a dirigé le royaume du Dahomey et était connue pour ses compétences guerrières."
+                },
+                {
+                    question: "Quelle était la capitale de l'Empire Songhaï à son apogée ?",
+                    options: ["Tombouctou", "Gao", "Djenné", "Koumbi Saleh"],
+                    correct: 1,
+                    explanation: "Gao était la capitale de l'Empire Songhaï, bien que Tombouctou en était le centre culturel et économique."
+                }
+            ],
+            geography: [
+                {
+                    question: "Quel est le plus grand pays d'Afrique par sa superficie ?",
+                    options: ["République Démocratique du Congo", "Soudan", "Algérie", "Libye"],
+                    correct: 2,
+                    explanation: "L'Algérie est le plus grand pays d'Afrique avec une superficie de 2,38 millions de km²."
+                },
+                {
+                    question: "Quel fleuve est le plus long d'Afrique ?",
+                    options: ["Fleuve Congo", "Fleuve Niger", "Fleuve Nil", "Fleuve Zambèze"],
+                    correct: 2,
+                    explanation: "Le Nil est le plus long fleuve d'Afrique (et du monde) avec environ 6.650 km."
+                }
+            ],
+            culture: [
+                {
+                    question: "Quel instrument de musique est originaire d'Afrique de l'Ouest ?",
+                    options: ["Kora", "Sitar", "Didgeridoo", "Banjo"],
+                    correct: 0,
+                    explanation: "La kora est un instrument à cordes originaire d'Afrique de l'Ouest, particulièrement du Mali, Sénégal et Gambie."
+                },
+                {
+                    question: "Quel écrivain africain a remporté le Prix Nobel de Littérature en 1986 ?",
+                    options: ["Chinua Achebe", "Wole Soyinka", "Ngũgĩ wa Thiong'o", "Léopold Sédar Senghor"],
+                    correct: 1,
+                    explanation: "Wole Soyinka, écrivain nigérian, a remporté le Prix Nobel de Littérature en 1986."
+                }
+            ],
+            cotedivoire: [
+                {
+                    question: "Quelle est la capitale économique de la Côte d'Ivoire ?",
+                    options: ["Abidjan", "Yamoussoukro", "Bouaké", "San-Pédro"],
+                    correct: 0,
+                    explanation: "Abidjan est la capitale économique de la Côte d'Ivoire, tandis que Yamoussoukro est la capitale politique."
+                },
+                {
+                    question: "Quel est le plat national de la Côte d'Ivoire ?",
+                    options: ["Attiéké", "Fufu", "Kedjenou", "Alloco"],
+                    correct: 0,
+                    explanation: "L'attiéké, fait à partir de manioc fermenté, est considéré comme le plat national ivoirien."
+                },
+                {
+                    question: "Quel président ivoirien a dirigé le pays de 1960 à 1993 ?",
+                    options: ["Laurent Gbagbo", "Henri Konan Bédié", "Félix Houphouët-Boigny", "Alassane Ouattara"],
+                    correct: 2,
+                    explanation: "Félix Houphouët-Boigny a été le premier président de la Côte d'Ivoire de l'indépendance en 1960 jusqu'à sa mort en 1993."
+                },
+                {
+                    question: "Quelle est la monnaie de la Côte d'Ivoire ?",
+                    options: ["Franc CFA", "Dollar", "Euro", "Cedi"],
+                    correct: 0,
+                    explanation: "La Côte d'Ivoire utilise le Franc CFA (XOF) comme monnaie, partagée avec d'autres pays d'Afrique de l'Ouest."
+                },
+                {
+                    question: "Quel est le principal produit d'exportation de la Côte d'Ivoire ?",
+                    options: ["Café", "Cacao", "Pétrole", "Bois"],
+                    correct: 1,
+                    explanation: "La Côte d'Ivoire est le premier producteur mondial de cacao, qui représente une part importante de ses exportations."
+                },
+                {
+                    question: "Quelle célèbre basilique se trouve à Yamoussoukro ?",
+                    options: ["Basilique Saint-Pierre", "Basilique Notre-Dame de la Paix", "Basilique du Sacré-Cœur", "Basilique Saint-Paul"],
+                    correct: 1,
+                    explanation: "La Basilique Notre-Dame de la Paix à Yamoussoukro est l'une des plus grandes églises catholiques au monde."
+                }
+            ]
+        };
+
+        // Gestion des utilisateurs
+        class UserManager {
+            constructor() {
+                this.users = JSON.parse(localStorage.getItem('quizUsers')) || [];
+                this.currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+            }
+            
+            // Inscrire un nouvel utilisateur
+            register(name, email, password) {
+                // Vérifier si l'email existe déjà
+                if (this.users.find(user => user.email === email)) {
+                    return { success: false, message: "Cet email est déjà utilisé" };
+                }
+                
+                // Créer le nouvel utilisateur
+                const newUser = {
+                    id: this.generateId(),
+                    name,
+                    email,
+                    password, // Dans un vrai système, il faudrait hacher le mot de passe
+                    score: 0,
+                    quizzesTaken: 0,
+                    correctAnswers: 0,
+                    totalAnswers: 0,
+                    isPremium: false,
+                    joinDate: new Date().toISOString()
+                };
+                
+                this.users.push(newUser);
+                this.saveUsers();
+                
+                return { success: true, user: newUser };
+            }
+            
+            // Connecter un utilisateur
+            login(email, password) {
+                const user = this.users.find(u => u.email === email && u.password === password);
+                
+                if (user) {
+                    this.currentUser = user;
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    return { success: true, user };
+                } else {
+                    return { success: false, message: "Email ou mot de passe incorrect" };
+                }
+            }
+            
+            // Déconnecter l'utilisateur
+            logout() {
+                this.currentUser = null;
+                localStorage.removeItem('currentUser');
+            }
+            
+            // Mettre à jour les statistiques de l'utilisateur
+            updateUserStats(score, correct, total) {
+                if (!this.currentUser) return;
+                
+                const userIndex = this.users.findIndex(u => u.id === this.currentUser.id);
+                if (userIndex !== -1) {
+                    this.users[userIndex].score += score;
+                    this.users[userIndex].quizzesTaken += 1;
+                    this.users[userIndex].correctAnswers += correct;
+                    this.users[userIndex].totalAnswers += total;
+                    
+                    // Mettre à jour l'utilisateur courant
+                    this.currentUser = this.users[userIndex];
+                    localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+                    
+                    this.saveUsers();
+                }
+            }
+            
+            // Activer le premium pour l'utilisateur
+            activatePremium() {
+                if (!this.currentUser) return false;
+                
+                const userIndex = this.users.findIndex(u => u.id === this.currentUser.id);
+                if (userIndex !== -1) {
+                    this.users[userIndex].isPremium = true;
+                    this.currentUser.isPremium = true;
+                    localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+                    this.saveUsers();
+                    return true;
+                }
+                return false;
+            }
+            
+            // Générer un ID unique
+            generateId() {
+                return 'user_' + Math.random().toString(36).substr(2, 9);
+            }
+            
+            // Sauvegarder les utilisateurs
+            saveUsers() {
+                localStorage.setItem('quizUsers', JSON.stringify(this.users));
+            }
+            
+            // Obtenir le classement des utilisateurs
+            getLeaderboard() {
+                return this.users
+                    .sort((a, b) => b.score - a.score)
+                    .slice(0, 10);
+            }
+            
+            // Obtenir la position de l'utilisateur dans le classement
+            getUserRank() {
+                if (!this.currentUser) return null;
+                
+                const sortedUsers = this.users.sort((a, b) => b.score - a.score);
+                const rank = sortedUsers.findIndex(u => u.id === this.currentUser.id) + 1;
+                return rank > 0 ? rank : null;
+            }
+        }
+
+        // État de l'application
+        const appState = {
+            currentTab: 'home',
+            currentCategory: null,
+            currentQuestion: 0,
+            quizScore: 0,
+            selectedOption: null,
+            userAnswers: [],
+            authMode: 'login' // 'login' ou 'register'
+        };
+
+        // Initialiser le gestionnaire d'utilisateurs
+        const userManager = new UserManager();
+
+        // Éléments DOM
+        const navTabs = document.querySelectorAll('.nav-tab');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+        const categories = document.querySelectorAll('.category');
+        const startQuizBtn = document.getElementById('start-quiz');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const currentQuestionEl = document.getElementById('current-question');
+        const totalQuestionsEl = document.getElementById('total-questions');
+        const quizScoreEl = document.getElementById('quiz-score');
+        const quizProgressBar = document.getElementById('quiz-progress-bar');
+        const prevQuestionBtn = document.getElementById('prev-question');
+        const nextQuestionBtn = document.getElementById('next-question');
+        const userScoreEl = document.getElementById('user-score');
+        const quizzesTakenEl = document.getElementById('quizzes-taken');
+        const correctAnswersEl = document.getElementById('correct-answers');
+        const userRankEl = document.getElementById('user-rank');
+        const verifyPaymentBtn = document.getElementById('verify-payment');
+        const notification = document.getElementById('notification');
+        const userInfo = document.getElementById('user-info');
+        const userGreeting = document.getElementById('user-greeting');
+        const loginBtn = document.getElementById('login-btn');
+        const leaderboardList = document.getElementById('leaderboard-list');
+        const profileContent = document.getElementById('profile-content');
+        
+        // Éléments d'authentification
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const loginSubmit = document.getElementById('login-submit');
+        const registerSubmit = document.getElementById('register-submit');
+        const switchToRegister = document.getElementById('switch-to-register');
+        const switchToLogin = document.getElementById('switch-to-login');
+        const authTitle = document.getElementById('auth-title');
+        const authSubtitle = document.getElementById('auth-subtitle');
+
+        // Navigation par onglets
+        navTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                
+                // Mettre à jour les onglets actifs
+                navTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                tabPanes.forEach(pane => pane.classList.remove('active'));
+                document.getElementById(tabId).classList.add('active');
+                
+                appState.currentTab = tabId;
+                
+                // Charger des données spécifiques à l'onglet
+                if (tabId === 'leaderboard') {
+                    loadLeaderboard();
+                } else if (tabId === 'profile') {
+                    loadProfile();
+                }
+            });
+        });
+
+        // Gestion de l'authentification
+        loginBtn.addEventListener('click', () => {
+            // Créer un onglet d'authentification temporaire
+            const authTab = document.createElement('div');
+            authTab.className = 'nav-tab active';
+            authTab.setAttribute('data-tab', 'auth');
+            authTab.textContent = 'Connexion';
+            
+            // Remplacer l'onglet actif
+            navTabs.forEach(tab => tab.classList.remove('active'));
+            document.querySelector('.nav-tab[data-tab="home"]').classList.add('active');
+            authTab.classList.remove('active');
+            
+            // Afficher le contenu d'authentification
+            tabPanes.forEach(pane => pane.classList.remove('active'));
+            document.getElementById('auth').classList.add('active');
+            
+            // Afficher le formulaire de connexion par défaut
+            showLoginForm();
+        });
+
+        // Basculer entre connexion et inscription
+        switchToRegister.addEventListener('click', showRegisterForm);
+        switchToLogin.addEventListener('click', showLoginForm);
+
+        // Soumission du formulaire de connexion
+        loginSubmit.addEventListener('click', () => {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!email || !password) {
+                showNotification('Veuillez remplir tous les champs');
+                return;
+            }
+            
+            const result = userManager.login(email, password);
+            if (result.success) {
+                showNotification(`Bienvenue, ${result.user.name}!`);
+                updateUserInterface();
+                // Revenir à l'accueil
+                document.querySelector('.nav-tab[data-tab="home"]').click();
+            } else {
+                showNotification(result.message);
+            }
+        });
+
+        // Soumission du formulaire d'inscription
+        registerSubmit.addEventListener('click', () => {
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirm = document.getElementById('register-confirm').value;
+            
+            if (!name || !email || !password || !confirm) {
+                showNotification('Veuillez remplir tous les champs');
+                return;
+            }
+            
+            if (password !== confirm) {
+                showNotification('Les mots de passe ne correspondent pas');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showNotification('Le mot de passe doit contenir au moins 6 caractères');
+                return;
+            }
+            
+            const result = userManager.register(name, email, password);
+            if (result.success) {
+                showNotification(`Compte créé avec succès! Bienvenue, ${result.user.name}`);
+                userManager.login(email, password);
+                updateUserInterface();
+                // Revenir à l'accueil
+                document.querySelector('.nav-tab[data-tab="home"]').click();
+            } else {
+                showNotification(result.message);
+            }
+        });
+
+        // Afficher le formulaire de connexion
+        function showLoginForm() {
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+            authTitle.textContent = 'Connexion';
+            authSubtitle.textContent = 'Accédez à votre compte pour sauvegarder vos progrès';
+            appState.authMode = 'login';
+        }
+
+        // Afficher le formulaire d'inscription
+        function showRegisterForm() {
+            loginForm.classList.add('hidden');
+            registerForm.classList.remove('hidden');
+            authTitle.textContent = 'Inscription';
+            authSubtitle.textContent = 'Créez un compte pour sauvegarder vos progrès';
+            appState.authMode = 'register';
+        }
+
+        // Mettre à jour l'interface utilisateur
+        function updateUserInterface() {
+            const user = userManager.currentUser;
+            
+            if (user) {
+                userGreeting.textContent = `Bonjour, ${user.name}`;
+                loginBtn.textContent = 'Déconnexion';
+                loginBtn.onclick = () => {
+                    userManager.logout();
+                    updateUserInterface();
+                    showNotification('Vous êtes déconnecté');
+                };
+                
+                // Mettre à jour les statistiques
+                userScoreEl.textContent = user.score;
+                quizzesTakenEl.textContent = user.quizzesTaken;
+                
+                const accuracy = user.totalAnswers > 0 ? 
+                    Math.round((user.correctAnswers / user.totalAnswers) * 100) : 0;
+                correctAnswersEl.textContent = `${accuracy}%`;
+                
+                // Mettre à jour le classement
+                const rank = userManager.getUserRank();
+                userRankEl.textContent = rank ? `#${rank}` : '-';
+                
+                // Débloquer les catégories si premium
+                if (user.isPremium) {
+                    document.querySelectorAll('.category.locked').forEach(category => {
+                        category.classList.remove('locked');
+                    });
+                }
+            } else {
+                userGreeting.textContent = 'Invité';
+                loginBtn.textContent = 'Connexion';
+                loginBtn.onclick = () => {
+                    // Afficher l'onglet d'authentification
+                    navTabs.forEach(tab => tab.classList.remove('active'));
+                    tabPanes.forEach(pane => pane.classList.remove('active'));
+                    document.getElementById('auth').classList.add('active');
+                    showLoginForm();
+                };
+                
+                // Réinitialiser les statistiques
+                userScoreEl.textContent = '0';
+                quizzesTakenEl.textContent = '0';
+                correctAnswersEl.textContent = '0%';
+                userRankEl.textContent = '-';
+            }
+        }
+
+        // Charger le classement
+        function loadLeaderboard() {
+            const leaderboard = userManager.getLeaderboard();
+            let html = '';
+            
+            if (leaderboard.length === 0) {
+                html = '<p>Aucun joueur dans le classement pour le moment.</p>';
+            } else {
+                leaderboard.forEach((user, index) => {
+                    const isCurrentUser = userManager.currentUser && user.id === userManager.currentUser.id;
+                    const userClass = isCurrentUser ? 'style="background-color: #e8f5e8;"' : '';
+                    
+                    html += `
+                        <div class="result-item" ${userClass}>
+                            <span>${index + 1}. ${user.name} ${isCurrentUser ? '(Vous)' : ''}</span>
+                            <span>${user.score} points</span>
+                        </div>
+                    `;
+                });
+            }
+            
+            leaderboardList.innerHTML = html;
+        }
+
+        // Charger le profil
+        function loadProfile() {
+            const user = userManager.currentUser;
+            
+            if (!user) {
+                profileContent.innerHTML = `
+                    <div class="profile-card">
+                        <p>Veuillez vous connecter pour accéder à votre profil.</p>
+                        <button class="btn btn-primary" id="go-to-auth">Se connecter</button>
+                    </div>
+                `;
+                
+                document.getElementById('go-to-auth').addEventListener('click', () => {
+                    // Afficher l'onglet d'authentification
+                    navTabs.forEach(tab => tab.classList.remove('active'));
+                    tabPanes.forEach(pane => pane.classList.remove('active'));
+                    document.getElementById('auth').classList.add('active');
+                    showLoginForm();
+                });
+                return;
+            }
+            
+            const joinDate = new Date(user.joinDate).toLocaleDateString('fr-FR');
+            const accuracy = user.totalAnswers > 0 ? 
+                Math.round((user.correctAnswers / user.totalAnswers) * 100) : 0;
+            const rank = userManager.getUserRank();
+            
+            profileContent.innerHTML = `
+                <div class="profile-card">
+                    <div class="profile-avatar">👤</div>
+                    <div class="profile-name">${user.name}</div>
+                    <div class="profile-email">${user.email}</div>
+                    <div class="profile-badge">${user.isPremium ? '⭐ Premium' : '🔓 Basique'}</div>
+                    
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-value">${user.score}</div>
+                            <div class="stat-label">Score Total</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${user.quizzesTaken}</div>
+                            <div class="stat-label">Quiz Complétés</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${accuracy}%</div>
+                            <div class="stat-label">Précision</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${rank ? '#' + rank : '-'}</div>
+                            <div class="stat-label">Classement</div>
+                        </div>
+                    </div>
+                    
+                    <div class="results-details">
+                        <div class="result-item">
+                            <span>Membre depuis:</span>
+                            <span>${joinDate}</span>
+                        </div>
+                        <div class="result-item">
+                            <span>Statut:</span>
+                            <span>${user.isPremium ? 'Premium' : 'Basique'}</span>
+                        </div>
+                        <div class="result-item">
+                            <span>Réponses correctes:</span>
+                            <span>${user.correctAnswers}/${user.totalAnswers}</span>
+                        </div>
+                    </div>
+                    
+                    ${!user.isPremium ? `
+                        <button class="btn btn-accent" id="upgrade-profile">Passer à Premium</button>
+                    ` : ''}
+                    
+                    <button class="btn btn-primary" id="logout-profile" style="margin-top: 15px;">Déconnexion</button>
+                </div>
+            `;
+            
+            if (!user.isPremium) {
+                document.getElementById('upgrade-profile').addEventListener('click', () => {
+                    document.querySelector('.nav-tab[data-tab="premium"]').click();
+                });
+            }
+            
+            document.getElementById('logout-profile').addEventListener('click', () => {
+                userManager.logout();
+                updateUserInterface();
+                showNotification('Vous êtes déconnecté');
+                loadProfile();
+            });
+        }
+
+        // Sélection de catégorie
+        categories.forEach(category => {
+            category.addEventListener('click', () => {
+                if (category.classList.contains('locked') && 
+                    (!userManager.currentUser || !userManager.currentUser.isPremium)) {
+                    showNotification('Cette catégorie est réservée aux utilisateurs Premium');
+                    document.querySelector('.nav-tab[data-tab="premium"]').click();
+                    return;
+                }
+                
+                categories.forEach(c => c.classList.remove('selected'));
+                category.classList.add('selected');
+                
+                appState.currentCategory = category.getAttribute('data-category');
+                startQuizBtn.disabled = false;
+            });
+        });
+
+        // Démarrer le quiz
+        startQuizBtn.addEventListener('click', () => {
+            if (!appState.currentCategory) {
+                showNotification('Veuillez sélectionner une catégorie');
+                return;
+            }
+            
+            appState.currentQuestion = 0;
+            appState.quizScore = 0;
+            appState.selectedOption = null;
+            appState.userAnswers = [];
+            
+            // Aller à l'onglet quiz
+            document.querySelector('.nav-tab[data-tab="quiz"]').click();
+            
+            // Charger la première question
+            loadQuestion();
+        });
+
+        // Charger une question
+        function loadQuestion() {
+            const categoryQuestions = quizData[appState.currentCategory];
+            const question = categoryQuestions[appState.currentQuestion];
+            
+            // Mettre à jour l'en-tête du quiz
+            currentQuestionEl.textContent = appState.currentQuestion + 1;
+            totalQuestionsEl.textContent = categoryQuestions.length;
+            quizScoreEl.textContent = appState.quizScore;
+            
+            // Mettre à jour la barre de progression
+            const progress = ((appState.currentQuestion + 1) / categoryQuestions.length) * 100;
+            quizProgressBar.style.width = `${progress}%`;
+            
+            // Afficher la question
+            questionText.textContent = question.question;
+            
+            // Afficher les options
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const optionEl = document.createElement('div');
+                optionEl.className = 'option';
+                if (appState.userAnswers[appState.currentQuestion] === index) {
+                    optionEl.classList.add('selected');
+                }
+                optionEl.textContent = option;
+                optionEl.addEventListener('click', () => selectOption(index));
+                optionsContainer.appendChild(optionEl);
+            });
+            
+            // Gérer les boutons de navigation
+            prevQuestionBtn.disabled = appState.currentQuestion === 0;
+            
+            if (appState.currentQuestion === categoryQuestions.length - 1) {
+                nextQuestionBtn.textContent = 'Terminer';
+            } else {
+                nextQuestionBtn.textContent = 'Suivant';
+            }
+        }
+
+        // Sélectionner une option
+        function selectOption(index) {
+            // Réinitialiser la sélection précédente
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Sélectionner la nouvelle option
+            document.querySelectorAll('.option')[index].classList.add('selected');
+            appState.selectedOption = index;
+            appState.userAnswers[appState.currentQuestion] = index;
+            
+            // Vérifier si la réponse est correcte
+            const currentQuestion = quizData[appState.currentCategory][appState.currentQuestion];
+            if (index === currentQuestion.correct) {
+                appState.quizScore += 10;
+                quizScoreEl.textContent = appState.quizScore;
+            }
+        }
+
+        // Question précédente
+        prevQuestionBtn.addEventListener('click', () => {
+            if (appState.currentQuestion > 0) {
+                appState.currentQuestion--;
+                loadQuestion();
+            }
+        });
+
+        // Question suivante
+        nextQuestionBtn.addEventListener('click', () => {
+            const categoryQuestions = quizData[appState.currentCategory];
+            
+            if (appState.currentQuestion < categoryQuestions.length - 1) {
+                appState.currentQuestion++;
+                loadQuestion();
+            } else {
+                // Terminer le quiz
+                finishQuiz();
+            }
+        });
+
+        // Terminer le quiz
+        function finishQuiz() {
+            // Calculer le nombre de bonnes réponses
+            const categoryQuestions = quizData[appState.currentCategory];
+            let correctCount = 0;
+            
+            for (let i = 0; i < categoryQuestions.length; i++) {
+                if (appState.userAnswers[i] === categoryQuestions[i].correct) {
+                    correctCount++;
+                }
+            }
+            
+            // Mettre à jour les statistiques de l'utilisateur
+            if (userManager.currentUser) {
+                userManager.updateUserStats(appState.quizScore, correctCount, categoryQuestions.length);
+                updateUserInterface();
+            }
+            
+            // Afficher l'écran de résultats
+            showResults(correctCount, categoryQuestions.length);
+        }
+
+        // Afficher les résultats
+        function showResults(correct, total) {
+            const resultsHTML = `
+                <div class="results-screen">
+                    <h2>Quiz Terminé!</h2>
+                    <div class="results-score">${appState.quizScore}</div>
+                    <div class="results-message">
+                        Vous avez ${correct} bonnes réponses sur ${total}
+                    </div>
+                    <div class="results-details">
+                        <div class="result-item">
+                            <span>Score de ce quiz:</span>
+                            <span>${appState.quizScore} points</span>
+                        </div>
+                        <div class="result-item">
+                            <span>Score total:</span>
+                            <span>${userManager.currentUser ? userManager.currentUser.score : appState.quizScore} points</span>
+                        </div>
+                        <div class="result-item">
+                            <span>Quiz complétés:</span>
+                            <span>${userManager.currentUser ? userManager.currentUser.quizzesTaken : 1}</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="back-to-home">Retour à l'Accueil</button>
+                    <button class="btn btn-secondary" id="new-quiz">Nouveau Quiz</button>
+                </div>
+            `;
+            
+            document.getElementById('quiz').innerHTML = resultsHTML;
+            
+            document.getElementById('back-to-home').addEventListener('click', () => {
+                document.querySelector('.nav-tab[data-tab="home"]').click();
+            });
+            
+            document.getElementById('new-quiz').addEventListener('click', () => {
+                document.querySelector('.nav-tab[data-tab="home"]').click();
+            });
+        }
+
+        // Vérification du paiement
+        verifyPaymentBtn.addEventListener('click', () => {
+            if (!userManager.currentUser) {
+                showNotification('Veuillez vous connecter pour acheter Premium');
+                return;
+            }
+            
+            // Simuler la vérification du paiement
+            showNotification('Vérification du paiement en cours...');
+            
+            setTimeout(() => {
+                // Dans un vrai système, on vérifierait avec l'API Wave
+                const paymentVerified = Math.random() > 0.3; // 70% de chance de succès
+                
+                if (paymentVerified) {
+                    const success = userManager.activatePremium();
+                    if (success) {
+                        showNotification('Paiement vérifié! Bienvenue en version Premium!');
+                        updateUserInterface();
+                        
+                        // Revenir à l'accueil
+                        document.querySelector('.nav-tab[data-tab="home"]').click();
+                    } else {
+                        showNotification('Erreur lors de l\'activation de Premium');
+                    }
+                } else {
+                    showNotification('Paiement non trouvé. Veuillez réessayer dans quelques minutes.');
+                }
+            }, 2000);
+        });
+
+        // Afficher une notification
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialisation
+        function init() {
+            updateUserInterface();
+            
+            // Désactiver le bouton de démarrage au début
+            startQuizBtn.disabled = true;
+        }
+
+        // Initialiser l'application
+        init();
+    </script>
+</body>
+</html>
