@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeu de Devinette - Partage</title>
+    <title>Jeu de Devinette - Paiement Wave</title>
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -22,24 +22,30 @@
         }
         
         .container {
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
             width: 100%;
             max-width: 500px;
-            padding: 30px;
+            padding: 40px 30px;
             text-align: center;
         }
         
         h1 {
             color: #333;
-            margin-bottom: 20px;
-            font-size: 2.2rem;
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
         }
         
         .description {
-            color: #666;
-            margin-bottom: 25px;
+            color: #777;
+            margin-bottom: 30px;
             line-height: 1.6;
         }
         
@@ -55,54 +61,56 @@
         }
         
         input {
-            padding: 12px 15px;
+            padding: 15px;
             border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1.1rem;
+            border-radius: 10px;
+            font-size: 1.2rem;
             text-align: center;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
         }
         
         input:focus {
-            border-color: #6a11cb;
+            border-color: #667eea;
             outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
         }
         
         button {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 8px;
-            padding: 12px 20px;
-            font-size: 1.1rem;
+            border-radius: 10px;
+            padding: 15px 25px;
+            font-size: 1.2rem;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s;
             font-weight: 600;
         }
         
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.1);
         }
         
         button:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
         }
         
         .secondary-btn {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            margin-top: 10px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            margin-top: 15px;
         }
         
         .message {
             margin: 20px 0;
-            padding: 15px;
-            border-radius: 8px;
+            padding: 20px;
+            border-radius: 10px;
             font-weight: 500;
-            min-height: 60px;
+            min-height: 70px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.1rem;
         }
         
         .hint {
@@ -115,28 +123,24 @@
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: bold;
+        }
+        
+        .warning {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
         
         .attempts {
             margin-top: 20px;
             color: #666;
-            font-size: 0.9rem;
-        }
-        
-        .debug {
-            background-color: #f8f9fa;
-            border: 1px dashed #dee2e6;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 15px;
-            font-size: 0.85rem;
-            color: #6c757d;
+            font-size: 1.1rem;
         }
         
         .share-section {
-            margin-top: 25px;
+            margin-top: 30px;
             padding-top: 20px;
             border-top: 1px solid #eee;
         }
@@ -156,7 +160,52 @@
         .share-link button {
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
-            padding: 12px 15px;
+            padding: 15px;
+        }
+        
+        .payment-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border: 2px dashed #dc3545;
+        }
+        
+        .payment-section h3 {
+            color: #dc3545;
+            margin-bottom: 15px;
+        }
+        
+        .wave-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #28a745;
+            background-color: #e9f7ef;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            letter-spacing: 1px;
+        }
+        
+        .payment-instructions {
+            text-align: left;
+            margin: 15px 0;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .payment-instructions ol {
+            padding-left: 20px;
+        }
+        
+        .payment-instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .transaction-input {
+            margin-top: 15px;
         }
         
         .hidden {
@@ -181,61 +230,100 @@
             opacity: 1;
         }
         
-        .share-instructions {
-            margin-top: 15px;
-            font-size: 0.9rem;
-            color: #666;
+        .instructions {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            text-align: left;
         }
         
-        .clickable-link {
-            display: block;
-            margin-top: 10px;
-            color: #2575fc;
-            text-decoration: none;
-            word-break: break-all;
-            padding: 10px;
-            border: 1px dashed #2575fc;
-            border-radius: 5px;
+        .instructions h3 {
+            margin-bottom: 10px;
+            color: #333;
         }
         
-        .clickable-link:hover {
-            text-decoration: underline;
-            background-color: #f0f8ff;
+        .instructions ol {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            input, button {
+                padding: 12px;
+                font-size: 1.1rem;
+            }
+            
+            .wave-number {
+                font-size: 1.3rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🎯 Jeu de Devinette</h1>
-        <p class="description">Je pense à un nombre entre 1 et 100. Essayez de le deviner !</p>
+        <p class="subtitle">Devinez le nombre secret entre 1 et 100</p>
+        <p class="description">Je pense à un nombre entre 1 et 100. À vous de le deviner! Après 5 tentatives échouées, un paiement de 100 FCFA sera requis.</p>
         
         <div class="game-area">
             <div class="input-group">
-                <input type="number" id="guessInput" min="1" max="100" placeholder="Entrez un nombre entre 1 et 100">
+                <input type="number" id="guessInput" min="1" max="100" placeholder="Entrez votre nombre...">
                 <button id="guessButton">Deviner</button>
             </div>
             
             <div id="message" class="message"></div>
             
             <div class="attempts">
-                Tentatives: <span id="attemptCount">0</span>
+                Tentatives: <span id="attemptCount">0</span> | 
+                Échecs: <span id="failureCount">0</span>/5
             </div>
             
-            <div id="debugInfo" class="debug">
-                <!-- Le nombre secret sera affiché ici -->
+            <div id="paymentSection" class="payment-section hidden">
+                <h3>⛔ Paiement Requis</h3>
+                <p>Vous avez échoué 5 fois. Veuillez effectuer un paiement de 100 FCFA via Wave pour continuer.</p>
+                
+                <div class="wave-number">0576540456</div>
+                
+                <div class="payment-instructions">
+                    <h4>Instructions de paiement :</h4>
+                    <ol>
+                        <li>Ouvrez l'application Wave</li>
+                        <li>Accédez à l'option "Envoyer de l'argent"</li>
+                        <li>Entrez le numéro: <strong>0576540456</strong></li>
+                        <li>Montant: <strong>100 FCFA</strong></li>
+                        <li>Ajoutez la référence: <strong>DEVINETTE</strong> dans les notes</li>
+                        <li>Confirmez le paiement</li>
+                    </ol>
+                </div>
+                
+                <div class="input-group transaction-input">
+                    <input type="text" id="transactionCode" placeholder="Entrez le code de transaction Wave">
+                    <button id="validatePayment">Valider le Paiement</button>
+                </div>
+                
+                <p><small>Une fois le paiement validé, vous pourrez continuer le jeu.</small></p>
             </div>
             
             <div class="share-section">
-                <button id="shareButton" class="secondary-btn">Partager ce jeu</button>
+                <button id="shareButton" class="secondary-btn">📤 Partager ce jeu</button>
                 <div id="shareLinkContainer" class="hidden">
-                    <p>Partagez ce lien pour que d'autres puissent jouer avec le même nombre secret :</p>
+                    <p>Partagez ce lien pour défier vos amis avec le même nombre secret :</p>
                     <div class="share-link">
                         <input type="text" id="shareLink" readonly>
                         <button id="copyButton">Copier</button>
-                    </div>
-                    <div class="share-instructions">
-                        <p>Vous pouvez copier le lien ci-dessus ou cliquer sur le lien ci-dessous pour tester :</p>
-                        <a id="clickableLink" href="#" target="_blank" class="clickable-link">Lien de partage</a>
                     </div>
                 </div>
             </div>
@@ -254,28 +342,37 @@
         
         if (sharedNumber) {
             secretNumber = parseInt(sharedNumber);
-            document.getElementById('debugInfo').textContent = `DEBUG: Vous jouez avec un nombre partagé - Le nombre secret est ${secretNumber}`;
         } else {
             secretNumber = Math.floor(Math.random() * 100) + 1;
-            document.getElementById('debugInfo').textContent = `DEBUG: Le nombre secret est ${secretNumber}`;
         }
         
         let attempts = 0;
+        let failures = 0;
+        let paymentRequired = false;
         
         // Éléments DOM
         const guessInput = document.getElementById('guessInput');
         const guessButton = document.getElementById('guessButton');
         const messageDiv = document.getElementById('message');
         const attemptCount = document.getElementById('attemptCount');
+        const failureCount = document.getElementById('failureCount');
+        const paymentSection = document.getElementById('paymentSection');
+        const transactionCode = document.getElementById('transactionCode');
+        const validatePayment = document.getElementById('validatePayment');
         const shareButton = document.getElementById('shareButton');
         const shareLinkContainer = document.getElementById('shareLinkContainer');
         const shareLink = document.getElementById('shareLink');
         const copyButton = document.getElementById('copyButton');
-        const clickableLink = document.getElementById('clickableLink');
         const notification = document.getElementById('notification');
         
         // Fonction pour vérifier la proposition
         function checkGuess() {
+            if (paymentRequired) {
+                messageDiv.textContent = "Veuillez d'abord valider votre paiement pour continuer.";
+                messageDiv.className = "message warning";
+                return;
+            }
+            
             const userGuess = parseInt(guessInput.value);
             
             // Validation de l'entrée
@@ -295,17 +392,57 @@
                 messageDiv.className = "message success";
                 guessButton.disabled = true;
                 guessInput.disabled = true;
-            } else if (userGuess > secretNumber) {
-                messageDiv.textContent = "Désolé, votre nombre est trop haut. Essayez encore !";
-                messageDiv.className = "message hint";
             } else {
-                messageDiv.textContent = "Désolé, votre nombre est trop bas. Essayez encore !";
-                messageDiv.className = "message hint";
+                // Incrémenter le compteur d'échecs
+                failures++;
+                failureCount.textContent = failures;
+                
+                if (userGuess > secretNumber) {
+                    messageDiv.textContent = "📉 Votre nombre est trop haut. Essayez encore !";
+                    messageDiv.className = "message hint";
+                } else {
+                    messageDiv.textContent = "📈 Votre nombre est trop bas. Essayez encore !";
+                    messageDiv.className = "message hint";
+                }
+                
+                // Vérifier si le paiement est nécessaire
+                if (failures >= 5) {
+                    paymentRequired = true;
+                    paymentSection.classList.remove('hidden');
+                    messageDiv.textContent = "❌ Vous avez échoué 5 fois. Paiement requis pour continuer.";
+                    messageDiv.className = "message warning";
+                    guessButton.disabled = true;
+                }
             }
             
             // Vider le champ de saisie
             guessInput.value = "";
-            guessInput.focus();
+            if (!paymentRequired) {
+                guessInput.focus();
+            }
+        }
+        
+        // Fonction pour valider le paiement
+        function validatePaymentCode() {
+            const code = transactionCode.value.trim();
+            
+            // Dans un système réel, vous vérifieriez le code de transaction avec une API
+            // Pour cette démo, nous acceptons n'importe quel code non vide
+            if (code.length > 0) {
+                paymentRequired = false;
+                paymentSection.classList.add('hidden');
+                guessButton.disabled = false;
+                messageDiv.textContent = "✅ Paiement validé ! Vous pouvez continuer à jouer.";
+                messageDiv.className = "message success";
+                guessInput.focus();
+                
+                // Réinitialiser le compteur d'échecs
+                failures = 0;
+                failureCount.textContent = failures;
+            } else {
+                messageDiv.textContent = "Veuillez entrer un code de transaction valide.";
+                messageDiv.className = "message warning";
+            }
         }
         
         // Fonction pour générer le lien de partage
@@ -315,19 +452,30 @@
             const shareUrl = `${baseUrl}?secret=${secretNumber}`;
             
             shareLink.value = shareUrl;
-            clickableLink.href = shareUrl;
-            clickableLink.textContent = shareUrl;
-            
             shareLinkContainer.classList.remove('hidden');
+            
+            // Faire défiler jusqu'au lien de partage
+            shareLinkContainer.scrollIntoView({ behavior: 'smooth' });
         }
         
         // Fonction pour copier le lien dans le presse-papiers
         function copyToClipboard() {
             shareLink.select();
-            shareLink.setSelectionRange(0, 99999); // Pour mobile
-            document.execCommand('copy');
+            shareLink.setSelectionRange(0, 99999);
             
-            // Afficher la notification
+            // Utiliser l'API Clipboard moderne si disponible
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(shareLink.value).then(() => {
+                    showNotification();
+                });
+            } else {
+                // Méthode de secours
+                document.execCommand('copy');
+                showNotification();
+            }
+        }
+        
+        function showNotification() {
             notification.classList.add('show');
             setTimeout(() => {
                 notification.classList.remove('show');
@@ -340,6 +488,14 @@
         guessInput.addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
                 checkGuess();
+            }
+        });
+        
+        validatePayment.addEventListener('click', validatePaymentCode);
+        
+        transactionCode.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                validatePaymentCode();
             }
         });
         
