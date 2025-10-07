@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeu de Devinette - Paiement Wave</title>
+    <title>Jeu de Devinette - Système de Paiement Wave</title>
     <style>
         * {
             margin: 0;
@@ -252,6 +252,23 @@
             color: #555;
         }
         
+        .payment-status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .verified {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
         @media (max-width: 600px) {
             .container {
                 padding: 25px 20px;
@@ -307,11 +324,15 @@
                         <li>Ajoutez la référence: <strong>DEVINETTE</strong> dans les notes</li>
                         <li>Confirmez le paiement</li>
                     </ol>
+                    <p><strong>Après paiement, cliquez sur "Vérifier le Paiement" pour continuer</strong></p>
+                </div>
+                
+                <div id="paymentStatus" class="payment-status pending hidden">
+                    Statut: En attente de vérification...
                 </div>
                 
                 <div class="input-group transaction-input">
-                    <input type="text" id="transactionCode" placeholder="Entrez le code de transaction Wave">
-                    <button id="validatePayment">Valider le Paiement</button>
+                    <button id="verifyPayment">Vérifier le Paiement</button>
                 </div>
                 
                 <p><small>Une fois le paiement validé, vous pourrez continuer le jeu.</small></p>
@@ -349,6 +370,10 @@
         let attempts = 0;
         let failures = 0;
         let paymentRequired = false;
+        let paymentVerified = false;
+        
+        // Simuler une base de données de transactions (en production, ce serait côté serveur)
+        const transactionDatabase = [];
         
         // Éléments DOM
         const guessInput = document.getElementById('guessInput');
@@ -357,8 +382,8 @@
         const attemptCount = document.getElementById('attemptCount');
         const failureCount = document.getElementById('failureCount');
         const paymentSection = document.getElementById('paymentSection');
-        const transactionCode = document.getElementById('transactionCode');
-        const validatePayment = document.getElementById('validatePayment');
+        const paymentStatus = document.getElementById('paymentStatus');
+        const verifyPayment = document.getElementById('verifyPayment');
         const shareButton = document.getElementById('shareButton');
         const shareLinkContainer = document.getElementById('shareLinkContainer');
         const shareLink = document.getElementById('shareLink');
@@ -367,7 +392,7 @@
         
         // Fonction pour vérifier la proposition
         function checkGuess() {
-            if (paymentRequired) {
+            if (paymentRequired && !paymentVerified) {
                 messageDiv.textContent = "Veuillez d'abord valider votre paiement pour continuer.";
                 messageDiv.className = "message warning";
                 return;
@@ -406,7 +431,7 @@
                 }
                 
                 // Vérifier si le paiement est nécessaire
-                if (failures >= 5) {
+                if (failures >= 5 && !paymentVerified) {
                     paymentRequired = true;
                     paymentSection.classList.remove('hidden');
                     messageDiv.textContent = "❌ Vous avez échoué 5 fois. Paiement requis pour continuer.";
@@ -417,32 +442,49 @@
             
             // Vider le champ de saisie
             guessInput.value = "";
-            if (!paymentRequired) {
+            if (!paymentRequired || paymentVerified) {
                 guessInput.focus();
             }
         }
         
-        // Fonction pour valider le paiement
-        function validatePaymentCode() {
-            const code = transactionCode.value.trim();
+        // Fonction pour vérifier le paiement (simulation d'API)
+        function verifyPaymentStatus() {
+            // Afficher le statut de vérification
+            paymentStatus.classList.remove('hidden');
+            paymentStatus.textContent = "Statut: Vérification en cours...";
+            paymentStatus.className = "payment-status pending";
             
-            // Dans un système réel, vous vérifieriez le code de transaction avec une API
-            // Pour cette démo, nous acceptons n'importe quel code non vide
-            if (code.length > 0) {
-                paymentRequired = false;
-                paymentSection.classList.add('hidden');
-                guessButton.disabled = false;
-                messageDiv.textContent = "✅ Paiement validé ! Vous pouvez continuer à jouer.";
-                messageDiv.className = "message success";
-                guessInput.focus();
+            // Simuler un appel API avec délai
+            setTimeout(() => {
+                // Dans un système réel, vous vérifieriez avec l'API Wave
+                // Pour cette démo, nous allons simuler une vérification avec 70% de succès
+                const isPaymentVerified = Math.random() > 0.3;
                 
-                // Réinitialiser le compteur d'échecs
-                failures = 0;
-                failureCount.textContent = failures;
-            } else {
-                messageDiv.textContent = "Veuillez entrer un code de transaction valide.";
-                messageDiv.className = "message warning";
-            }
+                if (isPaymentVerified) {
+                    paymentVerified = true;
+                    paymentRequired = false;
+                    paymentStatus.textContent = "Statut: Paiement vérifié avec succès!";
+                    paymentStatus.className = "payment-status verified";
+                    
+                    // Réactiver le jeu
+                    guessButton.disabled = false;
+                    messageDiv.textContent = "✅ Paiement validé ! Vous pouvez continuer à jouer.";
+                    messageDiv.className = "message success";
+                    
+                    // Réinitialiser le compteur d'échecs
+                    failures = 0;
+                    failureCount.textContent = failures;
+                    
+                    // Cacher la section de paiement après un délai
+                    setTimeout(() => {
+                        paymentSection.classList.add('hidden');
+                        guessInput.focus();
+                    }, 2000);
+                } else {
+                    paymentStatus.textContent = "Statut: Paiement non trouvé. Veuillez réessayer dans quelques minutes.";
+                    paymentStatus.className = "payment-status pending";
+                }
+            }, 2000);
         }
         
         // Fonction pour générer le lien de partage
@@ -491,13 +533,7 @@
             }
         });
         
-        validatePayment.addEventListener('click', validatePaymentCode);
-        
-        transactionCode.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                validatePaymentCode();
-            }
-        });
+        verifyPayment.addEventListener('click', verifyPaymentStatus);
         
         shareButton.addEventListener('click', generateShareLink);
         
